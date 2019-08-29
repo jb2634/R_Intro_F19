@@ -1,0 +1,467 @@
+---
+title: "A Resource Document for R Markdown"
+author: "Alec Wong"
+date: "February 24, 2017"
+output:
+  pdf_document:
+    highlight: tango
+    toc: yes
+    toc_depth: 3
+colorlinks: yes
+header-includes:
+- \usepackage{booktabs}
+---
+
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = TRUE, comment = NA)
+# This is a setup chunk - it does stuff at the beginning automatically (by
+# default) like loading libraries, setting knitr chunk options, etc. 
+
+# For example, this chunk sets the default `echo` setting to TRUE, making all
+# code chunks visible in the output.
+
+# The comment = NA argument removes the ## from the printed output.
+```
+
+\pagebreak
+
+\textcolor{blue}{R} Markdown is a union of several components - namely `knitr`, `pandoc`, and of course `R` - that allow the simultaneous comprehension of varied syntaxes and conventions, including Markdown, HTML & CSS, and \LaTeX. Composing an R Markdown document would proceed the same way this document is written. 
+
+*Very* generally, changes to the structure of .pdf outputs are handled by \LaTeX\ commands, and HTML outputs by HTML, and these are not generally mixed except in the case of equations.
+
+#Background Components
+
+##`knitr`
+
+`knitr` is the central component for handling `R` code input/output within the R Markdown ecosystem. It was inspired by `Sweave`, which is still an available authoring system within Rstudio, but instead of operating exclusively with \LaTeX\ syntax as `Sweave` does, `knitr` allows use of the simpler markdown syntax within the R Markdown authoring ecosystem. 
+
+Code chunks are the most obvious contribution of `knitr`, and they allow verbose or quiet evaluation of code, or just illustration without evaluation, among a myriad of other such "chunk options". These chunks are updated whenever you specify, making reproducible research easy. `knitr` facilitates dynamic report generation, with code chunks being seamlessly integrated into the report.
+
+##`pandoc`
+
+`pandoc` is a tool that handles the conversion of the .md (markdown format) produced by knitr into the output format of your specification, be it HTML, .pdf, Word doc, or the new R Notebook. When you go to knit a file, `knitr` handles evaluation and formatting of code chunks into markdown format, and `pandoc` processes the knitr output into the final document - you can see its activity in RStudio in the R Markdown tab next to the console:
+
+![Pandoc's output begins where pandoc is called on the local machine. The text after the double dashes '-\-' are pandoc arguments, and these can accept arguments from within the YAML - next.](pandoc.jpg)
+
+##`YAML`
+
+There isn't much typing that goes to the `YAML` (**Y**AML **A**in't **M**arkup **L**anguage) header. It's mostly used to set metadata, like titles, authors, date, and more usefully, passing arguments to `pandoc` and `knitr`, as well as other things. 
+
+The top of the accompanying .rmd document is an example, and the basic `YAML` is automatically generated when an R Markdown document is created. Some additional arguments are specified in this document, such as including a table of contents with `toc: true`, the table of content depth to be 3 levels `toc_depth: 3`. Notice the indenting structure used to nest `YAML` arguments appropriately. 
+
+
+
+***
+
+
+
+# Composing an R Markdown Document
+
+A cheat-sheet for many concerns about R Markdown can be found [here](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf). As with many other things, Google is your #1 friend when finding out how to do something. 
+
+## Markdown
+
+Markdown conventions can be accessed in many places, such as the cheatsheet provided earlier, the [pandoc README page](http://pandoc.org/MANUAL.html#pandocs-markdown)
+
+### Text
+
+Simple operations like *italicizing*, or **emboldening** font can be accomplished by wrapping text in single, and double-asterisks respectively. 
+
+New lines are only recognized after adding a white space (two carriage returns) between paragraphs. A single carriage return is ignored, as are multiple spaces (these are treated as one space). 
+
+Bullet points are accomplished using tab spaces, asterisks, pluses, and dashes
+
+```{r, eval = F, highlight=F}
+* To make
+    + nested 
+        - lists
+```
+
+
+* To make
+    + nested 
+        - lists
+
+Numbered lists proceed in a similar fashion although the number you type does not necessarily correspond to the number that prints, instead the order that prints is the order of appearance after the first number you type. 
+
+1. Therefore, a list starting with number 1
+10. Will continue sequentially regardless of what is typed here (I typed `10`)
+
+### Headings
+
+Markdown puts an emphasis on organizing text into sections. Headers are created using hashes `#`, and sub-sections are created simply by adding additional hashes `##...`. 
+
+For additional flexibility, the structure of the document can be altered using HTML (if publishing to an HTML document) and \LaTeX\ (if publishing to a .pdf). You can accomplish a top-level header any which way you want:
+
+\hrulefill
+
+**Markdown** \newline
+`# Section` \newline
+
+\textbf{\LaTeX}\ \newline
+`\section{Section}` \newline
+
+**HTML** (will be ignored if passed to .pdf) \newline
+`<h1>` \newline
+`Section` \newline
+`</h1>`
+
+\hrulefill
+
+These are all ways to format a heading, and sub-headings follow suit in the respective languages (i.e. secondary headers use two hashes, a `\subsection` in LaTeX, or `<h2>` in HTML).
+
+### Code chunks
+
+Code chunks are the component of R Markdown that distinguishes it from any other editor, and they provide great flexibility in composing documents with code.
+
+A code chunk is initiated using triple graves followed by `{r}`, and code chunk options are added after the r within the brackets as follows:
+
+\pagebreak[3]
+
+\hrulefill
+
+```{r, echo = F, comment=NA}
+cat('\x60','\x60','\x60', "{r, ARGS}",  sep = "")
+cat("code")
+cat('\x60','\x60','\x60', sep = "")
+```
+
+\hrulefill
+
+
+
+If you only want to print the results of code, say a 3x3 matrix of 1:9, you can use the `echo = F` argument in the code chunk `ARGS` area shown previously. (Reference the .rmd for the code, as it isn't displayed here.)
+
+```{r, echo = F, comment = NA}
+matrix(seq(1,9), nrow = 3, ncol = 3)
+```
+
+Or, if you only want to print the code for reference without evaluating it, you can use the `eval = F` argument in the code chunk; the code will be printed without its results, particularly useful if the code operates for a long time.
+
+Plenty of additional arguments can be passed to individual code chunks, or set at the beginning in a single code chunk containing `knitr::opts_chunk$set(...)`.
+
+A list of available options can be found [here](https://yihui.name/knitr/options/#chunk_options). 
+
+### Inline code
+
+Code can also be displayed in-line by surrounding the code with graves, or backticks \``like this`\`. 
+
+Knitr also handles inline *evaluation* of code. Say I set a an object `A = seq(from = 1, to = 10)` in my R environment; I can perform any operation on `A` by putting the letter 'r' before the code *within the backticks*:
+
+```{r}
+A = seq(from = 1, to = 10)
+```
+
+```{r, eval = F}
+`r A`
+```
+
+will print the contents of A: 
+
+`r A` 
+
+Again, any operation can be performed in-line: 
+
+```{r, eval = F}
+`r = sum(A)`
+```
+
+will print the sum of the contents of A: 
+
+`r sum(A)`
+
+And so on. This feature, along with the code chunks, make reproducible reports extremely simple; any analysis can be included in the code chunks and new reports on new data can be produced without much additional work.
+
+## Plots
+
+Including graphics is just as simple as generating plots in R. Using the code chunk functionality, plots can be created and the output will be printed below the chunk. 
+
+\pagebreak[1]
+
+```{r}
+library(ggplot2)
+
+x = seq(0,10,0.1)
+
+y = vector(mode = "numeric", length = length(x))
+for(i in 1:length(x)){
+  y[i] = x[i] + rnorm(n = 1, mean = 0, sd = 2)
+}
+
+xy = data.frame("x" = x, "y" = y)
+
+showplot = ggplot(data = xy) +
+  geom_point(aes(x = x, y = y)) + 
+  geom_smooth(aes(x = x, y = y))
+
+showplot
+```
+
+This is also a good example of reproducibility - since the data simulated has a random normal component, the plot (and any analysis on the data, for that matter) will change each time the code chunk is evaluated. If the data supplied were real, this plot would update based on any (appropriately formatted) input data, say for different years' analysis. 
+
+### Plot appearance
+
+Chunk options exist for plots - for example, the following chunk options manipulate the figure width & height to be very small (not particularly useful, but good for example) and centered.
+
+\hrulefill
+
+```{r, echo = F}
+cat('\x60','\x60','\x60', "{r, out.width='200px', out.height='100px', fig.align='center'}",  sep = "")
+cat("showplot")
+cat('\x60','\x60','\x60', sep = "")
+```
+
+\hrulefill
+
+```{r, echo = F, out.width="200px", out.height="100px", fig.align="center"}
+showplot
+```
+
+See the [code chunk link](https://yihui.name/knitr/options/#chunk_options) for more figure options.
+
+## Appearance
+
+An easy way to manipulate the output appearance without too much work is to use one of the pre-set themes (if using HTML), accessed through the gear icon in the tab bar up top:
+
+![](topbar.png)\
+
+Code highlighting styles can also be set there. 
+
+### HTML
+
+For HTML documents, if you know CSS, you can [supply your own style tags at the top of your R Markdown document](https://www.r-bloggers.com/addendum-to-yesterdays-post-on-custom-css-and-r-markdown/). 
+
+### .pdf \LaTeX\ Variables
+
+Various setup parameters can be adjusted when making a .pdf using \LaTeX\ variables. These are passed to `pandoc` through the `YAML` header. A complete list can be found [here](http://pandoc.org/MANUAL.html#variables-for-latex). 
+
+#### Fonts
+
+For pdf documents, the font can be changed by supplying a `fontfamily:` argument in a new unindented line to the YAML header; if you're using TeX Live, a list of available fonts can be found at [this website.](http://www.tug.dk/FontCatalogue/). Try setting the `fontfamily: arev` to see the effect (I picked a sans-serif font so the difference is exaggerated. 
+
+Fonts can be colored individually using the \\fontcolor{color}{text} command. 
+
+#### Page setup
+
+Page setup can be handled by \LaTeX\ variables in the header. 
+
+Margins can be altered by including 
+
+`geometry: margin=#in` 
+
+in a new unindented line, with the margin units in inches, or centimeters. 
+
+A table of contents can be included as done in this document 
+
+`toc: true` 
+
+creates a table of contents based upon your headers (but note that a pure \LaTeX\ grammar would use [sectioning commands](https://en.wikibooks.org/wiki/LaTeX/Document_Structure#Sectioning_commands) and the hierarchy specified therein). The depth of the sections displayed in the table of contents is specified by `toc_depth: #`. 
+
+See the [pandoc readme page](http://pandoc.org/MANUAL.html#variables-for-latex) for more details.
+
+# \LaTeX \ Primer
+
+R Markdown can be used with a minimal knowledge of \LaTeX\ , but having access to its functionality opens up many options when it comes to formatting the document - the previous section is an example.
+
+## Equations
+
+One foremost use of \LaTeX\ in R Markdown is its syntax in formatting equations. Equations are flexible to construct in R Markdown. For inline equations, wrap the \LaTeX\ formatted equation in single dollar signs: `E = mc^2` prints $E = mc^2$. These don't have to be strictly equations; single letters can be used to reference variables in text with minimal effort. R Studio will display a preview of the equation when the cursor is within the equation boundary. 
+
+Displayed equations are created most simply using the double-dollar sign, although you may wrap the equation in \\[ and \\] as well:
+
+```{r, eval = F, highlight = F}
+$$
+F = ma
+$$
+```
+
+$$
+F = ma
+$$
+
+To number the equations, I have resorted to writing the equations in \LaTeX\ completely, as R Markdown doesn't seem to handle numbered equations well. Additionally, referencing equations is easiest if you stay in \LaTeX\. 
+
+`\begin{equation}`\newline
+`\label{eq:equation1}`\newline
+`KE = 1/2mv^2`\newline
+`\end{equation}`
+
+\begin{equation}
+\label{eq:equation1}
+KE = 1/2mv^2
+\end{equation}
+
+I can reference equation \ref{eq:equation1} with this structure; \LaTeX\ automatically handles the order of the equations depending on when they appear in the body, eliminating the need to manually enter references to the equation number. The reference in the previous sentence was accomplished by entering `\ref{eq:equation1}`, and more generally one enters `\ref{eq:EQUATIONLABEL}`, with EQUATIONLABEL being whatever you decide to name it after the `\label{eq:EQUATIONLABEL}` command. 
+
+Note that RStudio will not preview input of pure \LaTeX\ equations.
+
+### Equation Structure
+
+Formatting equations can be complicated at first glance:
+
+\begin{equation}
+\begin{split}
+Y & \sim \text{Binomial}(K,p_{ij}) \\
+p_{ij} &= p_0 \ \text{exp}\left(-\frac{\text{dist}(x_{j}, s_{i})}{\sigma^2}\right) \\
+s_i &\sim \text{Uniform}(\mathcal{S})
+\end{split}
+\end{equation}
+
+Is formatted as follows:
+
+\hrulefill
+
+`\begin{equation}` \newline
+`\begin{split}`\newline
+`Y & \sim \text{Binomial}(K,p_{ij}) \\`\newline
+`p_{ij} &= p_0 * \text{exp}\left(-\frac{\text{dist}(x_{j}, s_{i})}{\sigma^2}\right) \\`\newline
+`s_i &\sim \text{Uniform}(\mathcal{S})`\newline
+`\end{split}`\newline
+`\end{equation}`
+
+\hrulefill
+
+There's a lot going on in the code above, and we'll break it down in the sections below.
+
+### Symbols
+
+Simple symbols like Greek letters typically have their own commands in \LaTeX\. Here's a small table (see the .rmd for table syntax):
+
+| Symbol  | Command |
+|---------|---------|
+|$\lambda$|`\lambda`|
+|$\theta$ |`\theta` |
+|$\pi$    |`\pi`    |
+|$\omega$ | `\omega`|
+
+Capital Greek letters can sometimes be obtained by capitalizing the first letter of the Greek letter's name in the command: 
+
+| Symbol  | Command |
+|---------|---------|
+|$\Lambda$|`\Lambda`|
+|$\Theta$ |`\Theta` |
+|$\Pi$    |`\Pi`    |
+|$\Omega$ | `\Omega`|
+
+Some capital letters are the same in Roman and Greek alphabets, such as capital chi (X) or capital tau (T), and so normal `\text{text}` can handle those. 
+
+See [this page](http://latex.wikia.com/wiki/List_of_LaTeX_symbols) for the complete list of \LaTeX\ symbols.
+
+### Distributions
+
+For things like statistical distributions, you will want to use the `\text{text}` command. For example, you would write
+
+`$N \sim \text{Poisson}(\lambda)$`
+
+to produce $N \sim \text{Poisson}(\lambda)$ (notice the `\sim` command for the "distributed as" symbol)
+
+### Fractions
+
+In my experience, complex fractions are best accomplished by using the `\frac{numerator}{denominator}` command. So, one-half would trivially be `\frac{1}{2}` =  $\frac{1}{2}$
+
+### Parentheses
+
+Sometimes using fractions makes a large term that isn't pretty to enclose in regular-size parentheses. For these, you must wrap the term in `\left(` followed by `\right)`. Notice the difference between:
+
+`$$\left(\frac{\text{numerator}}{\text{denominator}}\right)$$`
+
+$$\left(\frac{\text{numerator}}{\text{denominator}}\right)$$
+and 
+
+`$$(\frac{\text{numerator}}{\text{denominator}})$$`
+
+$$(\frac{\text{numerator}}{\text{denominator}})$$
+
+### Spacing
+
+You may find spacing between terms a little tight:
+
+`$p_0 \text{exp}(x)$`
+
+$p_0 \text{exp}(x)$
+
+You can resolve this in one of several ways, shown in [this page](https://www.sharelatex.com/learn/Spacing_in_math_mode)
+
+Typically the easiest is simply to add a single backslash, but other modifications are possible. Do note that spacebar spaces are ignored!
+
+`$p_0 \ \text{exp}(x)$`
+
+$p_0 \ \text{exp}(x)$
+
+### \LaTeX\ 'split' environment
+
+In order to stack equations, you need a few extra commands, starting with the `\begin{split}` command and wrapping it with the `\end{split}` command.
+
+Additionally, after each line you must signify a new line with a double backslash, and the equations are centered at the `&` character; I put the ampersands on the tildes and equal signs. 
+
+### Summations and Products
+
+If you want to write a summation, the structure is as follows:
+
+`\sum_{FROM}^{TO} SUMMAND`
+
+for example,
+
+`\sum_{i = 1}^{n} x_n`
+
+produces
+
+$$
+\sum_{i = 1}^{n} x_n
+$$
+
+Products and other series follow in this fashion.
+
+## Tables
+
+The wikia page is a good resource for all things \LaTeX\. The page for tables is [here](https://en.wikibooks.org/wiki/LaTeX/Tables). 
+
+Below is a solution using `kable` and \LaTeX\ formatting to left-center a table. I am beginning to think that using strict \LaTeX\ notation for custom inputted tables is preferable to workarounds like this. Note the YAML adjustment above. 
+
+```{r, results='asis'}
+Objectives = c("Cost", "Complaints", "Plant", "Butterfly", "Beetle")
+Weights = c(0,0,0.333,0.333,0.333)
+
+df = data.frame("Objective" = Objectives, "Weights" = Weights)
+t1 = kable(df, format = 'latex', booktabs = T)
+
+Alternatives = c("Spring Burn", "Mowing", "Grazing")
+Final = c(0.33, 0.16, 0.34)
+df = data.frame("Alternative" = Alternatives, "Final Score" = Final)
+t2 = kable(df, format = 'latex', booktabs = T)
+
+cat(c("\\begin{table}[h]
+    \\begin{minipage}{.3\\linewidth}",
+        t1,
+    "\\end{minipage}
+    \\begin{minipage}{.3\\linewidth}",
+        t2,
+    "\\end{minipage} 
+\\end{table}"
+)) 
+```
+
+
+**NOTE**
+
+\LaTeX\ doesn't like scientific notation in tables! I used `format(round(x, n), nsmall = n)` to get around the issue. 
+
+
+***
+
+\LaTeX\ commands are extremely numerous and can't all be described here, but these are some typical implementations that I've used *commonly* in the past.
+
+# Conclusion
+
+**What good is R Markdown?**
+
+R Markdown is useful for illustrating scientific, mathematic, and computational ideas in a legible, cohesive, presentable format. Integrating code into a pure \LaTeX\ document can *probably* be done, but not with the utility and ease of R Markdown. 
+
+Reports based on R analyses can be compiled easily and quickly once the template is constructed. These can be shared as .pdfs, or published to web pages directly with the HTML output. 
+
+Annotation of code is easy in RStudio now that code chunks can be evaluated in-line, with the output printed directly below your chunk or equation. 
+
+All these promote shareable, understandable science, and can aid communication of results.
+
+![View of the RStudio editor with code evaluated in-line](inlinecode.png)
