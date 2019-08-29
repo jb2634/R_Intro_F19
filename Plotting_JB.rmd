@@ -1,0 +1,292 @@
+---
+title: "Plotting"
+author: "Jennifer Brazeal"
+date: "9/5/19"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Before we get started, let's save data from an internal `datasets` package as a new object.
+This dataset is observations of CO2 uptake by plants originating from
+different locations (Quebec and Mississippi) and with different temperature treatments (chilled and not chilled) performed.
+```{r}
+
+CO2 = datasets::CO2
+```
+The head() function lets us take a quick look at the data - three columns of character vectors represented as 'factors', and two numeric columns
+```{r}
+head(CO2)
+```
+While str() shows us more specific information about the structure of the data
+```{r}
+str(CO2)
+
+```
+# Plot Types
+
+## Plotting one continuous variable ######################
+
+### Histograms - groups the data into bins (default or custom defined) spanning the range of the data, and displays the frequency of each bin.
+```{r}
+?hist
+```
+Example:
+
+```{r}
+
+hist(CO2$uptake)
+
+``` 
+
+### Density plots - Smooths out the data and displays density (analogous to continuous frequency) of data along the range of the data.
+
+```{r}
+?density # Combine with plot() to vizualize; i.e. plot(density(x))
+```
+Example:
+
+```{r}
+
+density(CO2$uptake)
+
+plot(density(CO2$uptake))
+
+```  
+
+### Dotcharts - Displays all point values along one dimension. In these plots, the X-axis shows the value you are plotting, while the Y-axis just separates out different data points
+```{r}
+
+?dotchart
+```
+Examples:  
+Note, you can specify a grouping factor to divide the points and visually compare by group
+
+```{r}
+dotchart(CO2$uptake, groups = CO2$Type) # separate out data by plant origin
+dotchart(CO2$uptake, color = CO2$Type) # You can also just change the color to be different by plant origin
+dotchart(CO2$uptake, groups = CO2$Treatment) # And do the same for the different treatments (chilled vs. non-chilled)
+dotchart(CO2$uptake, color = CO2$Treatment)
+
+```
+
+### Commentary: So far what have you noticed about CO2 uptake by plant country origin?  What about by treatment?
+
+## Plotting two variables ###########################
+
+### Scatterplots: 2 continuous variables
+
+```{r}
+?plot 
+```
+Examples:
+
+```{r}
+iris <- datasets::iris
+head(iris)
+?iris
+```
+
+We can use a scatterplot to look at how petal length changes with sepal length:
+```{r}
+plot(iris$Sepal.Length, iris$Petal.Length)
+```
+
+### Box plots - Groups the data along discrete factors, and display the median, interquartile range (whiskers), and outliers
+You can do this 2 ways: specify a categorical (factor level) x variable in plot(), which will automatically produce a boxplot, or use the boxplot() function directly.
+
+```{r}
+
+plot(iris$Species, iris$Petal.Length) 
+```
+
+Before using the boxplot function, let's take a quick look at its help file to understand the different arguments:
+
+```{r}
+?boxplot
+# Since we want to look at the differences by species, we would use the formula version:
+boxplot(formula = Petal.Length ~ Species, data = iris)
+
+# Tip: the tilde signifies that the left side variable is a response (i.e., the "y" variable) to the right side variable (i.e., the "x" variable). The same notation is used in statistical modeling, which you will see tomorrow. You can also use this in plot() instead of x = , y =
+
+```
+
+
+
+# What makes a plot a good visualization of your data?
+  + Plots should have a purpose, a clearly defined set of variables, and a message being conveyed. 
+  + Plots should be succinct and uncluttered so as to allow easy interpretation of the purpose. 
+  + Plots should be comprehensive, representing the data accurately and fairly.  
+
+Let's now take a closer look at the different plot types using our datasets to ask questions and explore relationships.
+
+# Scatterplots  
+
+Changing ambient CO2 should affect CO2 uptake - less CO2 available might imply a slower uptake rate. Can we visualize this?
+
+We have two numeric vectors within the dataframe ; this is a good candidate for a simple scatterplot
+
+```{r}
+class(CO2$conc)
+class(CO2$uptake)
+
+plot(x = CO2$conc, y = CO2$uptake)
+```
+
+## Commentary:
+There's some increase in uptake as the concentration gradient increases, but it doesn't really increase much after ~250 uL/L. It may imply that CO2 concentration is only a limiting factor at very low levels and does not drive uptake at higher concentrations.
+ 
+The above is a basic plot led by the data you input. The axes default to the range of the data, the size, font, marker type, and axis labels are all defaults too. But, we can change these!
+
+# Let's format the plot to look a little better. 
+```{r}
+plot(x = CO2$conc, y = CO2$uptake, 
+     xlab = 'CO2 Concentration uL/L', 
+     ylab = 'CO2 Uptake (umol/m^2 sec)', 
+     main = 'CO2 Uptake Under Ambient CO2 Concentration Gradient')
+```
+
+We gave our plot axis labels and a title. Let's make it even better.
+
+
+```{r}
+?par
+par(mar = c(5, 4, 4, 2) + 1, 
+    cex.lab = 1.5, 
+    pch = 19)
+plot(x = CO2$conc, y = CO2$uptake, 
+     xlab = expression(paste(CO[2] ," concentration uL/L")), 
+     ylab = expression(paste(CO[2], " uptake umol/", m^2 ,"sec")), 
+     main = expression(paste(CO[2], " uptake Under Ambient CO2 Concentration Gradient")))
+
+?expression
+?paste
+```
+Note, par() is useful if you want to set plot specifications for the plotting window, as well as any plots following, but many of the arguments could be used directly in the plot function too for the specific plot (e.g., pch, col, cex.XXX).
+
+Using expression() with paste() allows us to print special characters in our plot text.  You can simply do a google search if you want to plot special characters and find examples online how to do so. Above, you can see that m^2 prints 2 as a superscript, while [2] prints 2 as a subscript. These special characters are not surrounded by quotations when used in this context.  
+
+
+# Exploring the data with biological questions in mind.
+
+Biological processes are usually temperature mediated. We should expect higher respiration (CO2 uptake) with higher temperatures. What are the treatments? levels() extracts the unique factors from a 'factor' vector. 
+
+```{r}
+levels(CO2$Treatment)
+```
+
+We're interested in the distribution of uptake as it relates to treatment. How can we visualize this?
+  + Box plot - grouping along a discrete variable (treatment) and display distribution of data
+  + Density plot with line type determined by factor
+  + Scatterplot colored by factor level
+
+# Box plot:
+
+```{r}
+
+boxplot(uptake ~ Treatment, data = CO2, notch = TRUE) # including notch=TRUE provides evidence that the  medians differ if the notches do not overlap
+
+```
+Our boxplot indicates there is some effect of treatment. As we predicted, CO2 uptake is lower in the chilled conditions.  
+
+# Density plot
+
+```{r}
+plot(density(CO2[CO2$Treatment == "nonchilled", "uptake"]), 
+     col = "red", 
+     type = "l", 
+     main = "CO2 uptake by treatment")
+
+lines(density(CO2[CO2$Treatment == "chilled", "uptake"]), col = "blue")
+
+legend(x = "topright",
+       legend = c("chilled", "nonchilled"),
+       col = c("blue", "red"),
+       lty = 1)
+
+```
+
+Hmm, an interesting thing to note is there is a second density peak for chilled at higher CO2 uptake levels. What do you think is going on there?
+
+# Scatterplot with color by factor level
+
+Below, we will use the col argument to change the colors of the points that we plot by different factor levels, first by treatment, then by plant origin. We will also plot CO2 uptake against ambient CO2 once more, just to give us more practice with scatterplots, which require two continuous variables. 
+
+```{r}
+
+par(mar = c(5, 4, 4, 2) + 1, 
+    cex.lab = 1.5, 
+    pch = 19,
+    xpd = TRUE) # xpd set to TRUE allows us to plot the legend following outside of the plot box
+
+palette(c("red", "blue")) # R has a default palette, which is the colors that automatically get pulled, but you can change this yourself with palette()
+
+plot(x = CO2$conc, y = CO2$uptake, 
+     ylim = c(0, 50),
+     xlab = expression(paste(CO[2] ," concentration uL/L")), 
+     ylab = expression(paste(CO[2], " uptake umol/", m^2 ,"sec")), 
+     main = expression(paste(CO[2], " uptake Under Ambient CO2 Concentration Gradient")), 
+     col = CO2$Treatment)
+legend(x = 300,
+       y = -15,
+       legend = levels(CO2$Treatment),
+       col = 1:2,
+       pch = 19,
+       bty = "n",
+       horiz = T)
+
+palette(c("green", "grey"))
+plot(x = CO2$conc, y = CO2$uptake, 
+     ylim = c(0, 50),
+     xlab = expression(paste(CO[2] ," concentration uL/L")), 
+     ylab = expression(paste(CO[2], " uptake umol/", m^2 ,"sec")), 
+     main = expression(paste(CO[2], " uptake Under Ambient CO2 Concentration Gradient")), 
+     col = CO2$Type)
+legend(x = 300,
+       y = -15,
+       legend = levels(CO2$Type),
+       col = 1:2,
+       pch = 19,
+       bty = "n",
+       horiz = T)
+
+```
+
+Now that we've looked at the uptake by both treatment and plant origin, let's take a closer look at the effect of plant origin on uptake and see if that might interact with treatment, as the plots above have hinted at. 
+
+
+```{r}
+
+boxplot(uptake ~ Treatment, data = CO2[CO2$Type == "Quebec",], main = "Quebec")
+boxplot(uptake ~ Treatment, data = CO2[CO2$Type == "Mississippi",], main = "MS")
+
+
+```
+
+You can see above that the effect of the temperature treatment is much stronger, and perhaps only significant, in the plants that originated from Mississipi, as we expected.
+
+Let's also compare the distribution of uptake rates between Quebec and Mississippi under both temperature conditions.  
+
+```{r}
+
+boxplot(uptake ~ Type, data = CO2[CO2$Treatment == "chilled",], main = "Chilled")
+boxplot(uptake ~ Type, data = CO2[CO2$Treatment == "nonchilled",], main = "Not chilled")
+
+
+```
+
+In fact, we can see that Quebec appears to have higher uptake rates in both chilled and non-chilled conditions, though the difference is stronger under cold conditions.  
+
+# Exercises
+
+1. 
+
+
+
+
+
+
+
