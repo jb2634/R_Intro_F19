@@ -60,35 +60,45 @@ x<-5+4
 # this uses a '<-' to  assign the value of '5+4' to 'x'
 # Now, in your global environment, you have a data object named "x" that is the numeric value of 9
 
-y = 10*4+2  
+# If you assign a different input to "x", it will erase your previous input and 
+# make "x" hold the new data:   
+
+x <- 20
 
 # You can also use "=" to assign to objects (Note that the order of operations holds in R, so 
 # 10*4+2 is different from 10*(4+2))
+
+y = 10*4+2  
+
 # You can see to the right that x and y have now been added to your environment
 
 sum(x, y) # you can use these objects as arguments inside functions.
 
 # This takes the value of x and y and calculates the sum
-# and you can assign the output of a function to an object:
+# You can also assign the output of a function to an object:
 
 sumxy <- sum(x, y)
+
+# Note, R has restrictions on what you can name data objects.  They cannot
+# start with a number, or contain any special characters besides "." or "_"
+# It can start with a "." but only if what follows is a letter.  It cannot start
+# with an "_"
+
+.x <- 10
+_x <- 10
+.2x <- 10
+2x <- 10
 
 #Object/Data types and structures ####
 #More details at https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/
 
 #Objects can be of different types: character, numeric, integer, logical, complex
-# using is.x and as.x
 
-is.numeric(4) 
-
-# 4 is a floating point numeric. You cant see it but there are lots of points of precision in the background.
+is.numeric(4)
 
 is.integer(4) # this gives FALSE because '4' is not an 'integer' type, even though it is a whole number
 
 is.integer(4L) # this gives TRUE. The L after the 4 says that it is an integer. Storing 4 this way takes up less space.
-
-is.double(4) # Double is a kind of numeric.
-
 
 is.logical(TRUE) # "TRUE" is logical. "FALSE" is also logical
 
@@ -126,12 +136,12 @@ textvector
 
 bVector <- aVector * 1.3 ; bVector # this creates a new vector. the ";" lets you write two executable lines on one line.
 # So, you assign the output of avector * 1.3 and then print the object bvector
-
 #You can also surround an assignment with () to automatically print the output:
-  
+
 (bVector <- aVector * 1.3)
 
-# note that the above operation multiplied 1.3 by each element in aVector. R automatically handles mismatches in length by cycling through the
+# note that the above operation multiplied 1.3 by each element in aVector. 
+# R automatically handles mismatches in length by cycling through the
 # object of shorter length, in this case 1.3.
 
 # When you do basic math on 2 vectors of equal length, each element is automatically operated on in a pairwise manner:
@@ -150,13 +160,14 @@ eVector<-seq(from=2,to=42,by=4) # a sequence of values from  2 to 42, increasing
 
 length(aVector) # this tells you the number of entries inside 'aVector'
 
-# If you want a series of numbers separated by 1, then you can use a colon between the min and max bounding numbers to do so
+# If you want a series of numbers separated by 1, 
+# then you can use a colon between the min and max bounding numbers to do so
 
 1:10
 1.5:20.5
 20.75:1.8 # you can even create it decreasing
 
-#Matrix: entries are all one type, with some number of rows and columns 
+# Matrix: entries are all one type (e.g., numeric, character), with some number of rows and columns 
 
 aMatrix<-matrix(data = c(4,13), nrow = 3, ncol = 2, byrow = FALSE, dimnames = NULL) 
 # matrix with 3 rows and 2 columns, where 4 and 13 are put into the matrix by columns.
@@ -174,11 +185,14 @@ rbind(aVector,eVector) # if you bind things of unequal length you get a warning 
 eVector
 aVector # Note that it cycled through the shorter vector, aVector, to make up the difference automatically
 
-# if you try to bind things of different types, it will convert them to the same type, for instance
+# if you try to bind things of different types, it will convert them to the same type, 
+# for instance:
 
-(mismatchvec <- cbind(eVector, textvector)) # Note the quotations around the elements of eVector?
+(mismatchvec <- cbind(eVector, textvector)) 
+# Note the quotations around the elements of eVector?
 class(mismatchvec[ , 1]) # It automatically turned the numeric vector to a character one. 
-# also, remember how we said rows are always the first index and columns the second? Well here we see that in action
+# also, remember how we said rows are always the first index and columns the second? 
+# Well, here we see that in action
 # the [ ,1] is the way you return all row elements in the first column of "matrix mismatchvec"
 # if you did:
 mismatchvec[1, ] # it would return all column elements of the first row
@@ -188,8 +202,11 @@ mismatchvec[1, 2] # element from row 1, col 3
 mismatchvec[1:3, 1]
 # and so on...
 
-#Matrices vs. Dataframes: kind of like a matrix upgraded. I like to think of a dataframe as a bunch of vector columns that can be of different
-# data types, bound together (cbind())) into one matrix dimensioned object
+# Matrices vs. Dataframes
+# dataframes and matrices have similar forms (row by column) but matrices contain only
+# one data type, while dataframes can be multiple data types, as long as each column
+# contains the same datatype.  You can think of dataframes as multiple same length vectors
+# turned into columns and combined together into one dataframe. 
 
 aDataframe<-data.frame() #create empty dataframe
 people <- c("Alex", "Barb", "Carl") # create a vector of character names
@@ -207,22 +224,34 @@ aDataframe <- data.frame(people = c("Alex", "Barb", "Carl"),
 colnames(aDataframe)
 aDataframe
 class(aDataframe[,1]); class(aDataframe[,2])
-# Note how the data types are different? Dataframes also have a habit of automatically turning character vectors
-# into factors.  This transforms simple strings into something with "levels". 
-# It still looks like text, but they are stored and handled differently in R.
+# Note how the data types are different? Dataframes also default to 
+# automatically turning character vectors
+# into factors.  This transforms simple strings into something with "levels"
+# It still looks like text, but is stored and handled differently in R.
+?is.factor
 
-# let's try that again, but keep the people vector as characters:
+# let's try that again, but keep the people vector as characters by using the 
+# stringsAsFactors argument:
 aDataframe <- data.frame(people = c("Alex", "Barb", "Carl"),
                          ages = c(19, 29, 39), 
                          stringsAsFactors = FALSE)
 
 class(aDataframe[,1]); class(aDataframe[,2])
-# The argument stringsAsFactors specifies if you want to keep characters as character strings or turn them into factors.  
-# It defaults to TRUE, though you can change that in your working environment.
+# The argument stringsAsFactors specifies if you want to keep characters as 
+# character strings or turn them into factors.  
+# It defaults to TRUE, though you could change that in your working environment in 
+# lieu of specifying FALSE each time if you prefer to keep characters as characters
+# How might we do this? Let's see:
 ?data.frame
+options(stringsAsFactors = FALSE)
+aDataframe <- data.frame(people = c("Alex", "Barb", "Carl"),
+                         ages = c(19, 29, 39))
+class(aDataframe[,1]); class(aDataframe[,2])
+
 
 aDataframe$people # In addition to [] indexing, you can also access data.frame columns using "$"
-# '$' extracts the columns of that name. You cant use '$' with a matrix, even a matrix with column names
+# '$' extracts the columns of that name. 
+# You cant use '$' with a matrix, even a matrix with column names
 
 colnames(aMatrix) <- c("col1", "col2")
 aMatrix
@@ -233,8 +262,8 @@ aDataframe$height <- c("short","tall","tall") # you can also add a column to a d
 names(aDataframe)
 
 dim(aDataframe) # you can get the dimensions of a dataframe too. 
-str(aDataframe) # this looks at the structure of 'aDataframe'. gives you all the info you need to know 
-aDataframe_asMatrix<-as.matrix(aDataframe)# you can transform a dataframe into a Matrix. 
+str(aDataframe) # this looks at the structure of 'aDataframe' 
+aDataframe_asMatrix<-as.matrix(aDataframe)# you can transform a dataframe into a matrix. 
 # But if the columns are of different types, they will be transformed to the same data type
 
 # Lists are lists of things. they can be of different things that are each of different size, length, dimensions. 
@@ -252,11 +281,46 @@ aList[[2]][ ,1]
 aList$aVector[1]
 aList$aMatrix[ ,1]
 
-# more advanced subsetting:
+#####################################################################################
+# More advanced subsetting. Don't worry if this seems confusing to you now. 
+# I intend this section to be useful for future reference:
+# First, we create a df that has a months col with months Jan, March, and Dec,
+# and a days col, with days 1:10 for each month:
+(datedf <- data.frame(months = rep(c("Jan", "March", "Dec"), 10),
+           days = rep(1:10, each = 3)))
 
+# We will subset out just the month of Jan by telling R we want the datedf
+# dataframe, but only the rows where the months column equals "Jan" 
+# Note how the subsetting code is in the first index placeholder in [ , ] 
+(datedf.Jan <- datedf[datedf$months == "Jan", ])
+# same method for getting all the rows with day 3
+(datedf.3 <- datedf[datedf$days == 3, ])
+# Important, don't forget the comma signifying the index placement! 
+# If you try to run this:
+(datedf.3 <- datedf[datedf$days == 3 ]) 
 
+# it won't work because when there is no "," in [ ] for data frames, R automatically 
+# assumes you are wanting a column, but we are subsetting rows, not columns. 
+# For example, 
+datedf[2] # returns the second column of datedf.
 
-# Reading and Writing ###
+# You can also get a column by specifying the column name 
+col2 <- datedf[ , "days"]
+# That's equivalent to datedf$days, but the above can come in handy
+# if you just want the days column returned for specific rows:
+
+datedf[datedf$months == "Jan", "days"]
+# Note, that's equivalent to:
+datedf[datedf$months == "Jan", 2]
+
+# You could also specify multiple subsetting conditions using "&", or you could use
+# "|" between conditions to mean "this or that". For example: 
+
+datedf[datedf$months == "Jan" | datedf$months == "March", ]
+datedf[datedf$months == "Jan" & datedf$days == 1, ]
+
+##################################################################################3
+# Reading and writing files ###
 datasets::CO2 # this is a dataset on a CO2 experiment with plants. It is a dataset that came automatically with R. 
 head(CO2) # this looks at the head/beginning of CO2
 tail(CO2) # this looks at the tail/end of CO2. These are useful when you want to make sure that everythign looks good
@@ -273,7 +337,8 @@ C02_readin <- read.csv("CO2.csv",header=TRUE) # this grabs the CO2.csv file from
 #Exercises      ####
 ####################
 # There are multiple ways to do most things in R. 
-# To get help, look above for examples, reference help files, google, or just ask for help from us or your neighbors. 
+# To get help, look above for examples, reference help files, 
+# google, or just ask for help from us or your neighbors. 
 
 # 1.  Create a 4X2 matrix of numbers (4 rows, 2 columns) called "classmat"
       # the first column should be the series of whole numbers from 4 to 7.
@@ -297,7 +362,7 @@ C02_readin <- read.csv("CO2.csv",header=TRUE) # this grabs the CO2.csv file from
 
 # 7. What is the 'type' for uptake? Change it to type 'integer'. 
 
-### we'll do these together, but if you finish earlier go ahead and start trying, and use google for help:
+### We'll do these together, but if you finish early go ahead and start trying, and use google for help:
 
 # 8. What is the total uptake rate of all the plants?
 
@@ -306,5 +371,6 @@ C02_readin <- read.csv("CO2.csv",header=TRUE) # this grabs the CO2.csv file from
 # 10. What is the uptake rate of the 54th plant? What are the units of the uptake rate?
 
 # 11. What is the average uptake rate of Mississippi plants that were chilled?
+
 
 
