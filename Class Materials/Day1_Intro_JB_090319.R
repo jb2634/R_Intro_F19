@@ -266,9 +266,9 @@ str(aDataframe) # this looks at the structure of 'aDataframe'
 aDataframe_asMatrix<-as.matrix(aDataframe)# you can transform a dataframe into a matrix. 
 # But if the columns are of different types, they will be transformed to the same data type
 
-# Lists are lists of things. they can be of different things that are each of different size, length, dimensions. 
-# Lists are a very useful, flexible way of storing and manipulating data, though their utility can be less intuitive to 
-# R beginners.  
+# Lists are lists of different data types. Each "element" in the list can be of 
+# different size, length, dimensions, etc. 
+# Lists are a very useful, flexible way of storing and manipulating data.
 aList <- list(aVector,aMatrix,aDataframe);aList # creating a list of 3 different things
 aList <- list(aVector=aVector,aMatrix=aMatrix,aDataframe=aDataframe);aList #this does the same thing, but I've also given them names 
 aList$aVector
