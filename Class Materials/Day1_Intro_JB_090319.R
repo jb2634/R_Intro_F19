@@ -1,9 +1,12 @@
 ### Day 1###########################################
 # This is an R script. The file extension is ".R"
-# You can create other files in Rstudio, such as .txt, .Rmd, .stan which do different things, but .R is the basic,
+# You can create other files in Rstudio, such as .txt, .Rmd, 
+#.stan which do different things, but .R is the basic,
 # and no frills file format for saving your code and workflow.
-# At the beginning of every script, and throught your script,  keep notes about what, why, when, how.
-# You can use the # key at the beginning of each line (as we are here) to tell R that you are annotating 
+# At the beginning of every script, and throught your script,  
+# keep notes about what, why, when, how.
+# You can use the # key at the beginning of each line (as we are here) 
+# to tell R that you are annotating 
 # rather than writing executable script.
 
 # Today covers: 
@@ -31,19 +34,28 @@ setwd("") # this will set the working directorty to the path file you provide in
 #Math, Calculations #### 
 5+4 
 
-# this does a calculation. Nothing is saved to the environment because you haven't assigned the output
+# this does a calculation. 
+# Nothing is saved to the environment because you haven't assigned the output
 10*4+2
 
 # this another a calculation. Nothing is saved to the environment. 
 cos(82) 
 
-# a "function" is something that does something under the hood and is indicated by (). cos() takes the cosine.
+# a "function" is something that does something under the hood and 
+# is indicated by (). cos() takes the cosine.
 # Inside any functions '()', are things called "arguments" that whoever created the function specified to be 
 # part of the function's operation
 # Multiple arguments are separated by ","
-# let's see what the R help file for cos() says about the arguments needed, along with other helpful info:
+# let's see what the R help file for cos() says 
+#about the arguments needed, along with other helpful info:
 
 ?cos()
+cos(1)
+cos(x = 1)
+atan2(1,2)
+
+atan2(x = 2, 
+      y = 1)
 # Base R functions like cos() are preloaded with R, along with their help files. 
 # Package-specific functions and their help files are accessible
 # when you download and load the package into your environment.
@@ -55,7 +67,7 @@ cos(82)
 
 # Examples:
 
-x<-5+4 
+x <- 5+4 
 
 # this uses a '<-' to  assign the value of '5+4' to 'x'
 # Now, in your global environment, you have a data object named "x" that is the numeric value of 9
@@ -77,10 +89,11 @@ sum(x, y) # you can use these objects as arguments inside functions.
 # This takes the value of x and y and calculates the sum
 # You can also assign the output of a function to an object:
 
-sumxy <- sum(x, y)
+sumxy <- sum(x, y, NA, na.rm = TRUE)
 
-# Note, R has restrictions on what you can name data objects.  They cannot
-# start with a number, or contain any special characters besides "." or "_"
+# Note, R has restrictions on what you can name data objects.  
+# They cannot start with a number, 
+# or contain any special characters besides "." or "_"
 # It can start with a "." but only if what follows is a letter.  It cannot start
 # with an "_"
 
@@ -90,7 +103,8 @@ _x <- 10
 2x <- 10
 
 #Object/Data types and structures ####
-#More details at https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/
+# More details at 
+# https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/
 
 #Objects can be of different types: character, numeric, integer, logical, complex
 
@@ -117,8 +131,8 @@ is.numeric("4")
 is.character("4")
 
 # But you can transform them to numbers:
-
-charToNumber <- as.numeric("4")
+char4 <- "4"
+char4 <- as.numeric(char4)
 
 class(charToNumber)
 
@@ -150,7 +164,7 @@ aVector * bVector
 
 
 #you can also use the functions sort(), rep(), and seq() to create or organize vectors.
-dVector <- rep(1,10) # this creates a vector by saying you want the number 1 repeated 10 times
+(dVector <- rep(1,10)) # this creates a vector by saying you want the number 1 repeated 10 times
 
 cVector<-sort(aVector,decreasing=FALSE ) # 'decreasing' is an argument in sort(). False is the default and that means it will NOT sort in decreasing order.
 
@@ -166,10 +180,14 @@ length(aVector) # this tells you the number of entries inside 'aVector'
 1:10
 1.5:20.5
 20.75:1.8 # you can even create it decreasing
+seq(1.5, 20.5, 0.2)
+# Matrix: entries are all one type (e.g., numeric, character), 
+# with some number of rows and columns 
 
-# Matrix: entries are all one type (e.g., numeric, character), with some number of rows and columns 
-
-aMatrix<-matrix(data = c(4,13), nrow = 3, ncol = 2, byrow = FALSE, dimnames = NULL) 
+aMatrix<-matrix(data = c(4,13), 
+                nrow = 3, 
+                ncol = 2, 
+                byrow = TRUE) 
 # matrix with 3 rows and 2 columns, where 4 and 13 are put into the matrix by columns.
 
 dim(aMatrix) # this will give you the dimensions. the first number is the number of rows; the second is the number of columns. Rows are always
@@ -181,7 +199,7 @@ rbind(aVector,bVector) # you can also create matrices by binding vectors or matr
 
 cbind(aVector,bVector) # or by columns with cbind() 
 
-rbind(aVector,eVector) # if you bind things of unequal length you get a warning message
+rbind(c(aVector, rep(0, 7)),eVector) # if you bind things of unequal length you get a warning message
 eVector
 aVector # Note that it cycled through the shorter vector, aVector, to make up the difference automatically
 
@@ -270,7 +288,9 @@ aDataframe_asMatrix<-as.matrix(aDataframe)# you can transform a dataframe into a
 # different size, length, dimensions, etc. 
 # Lists are a very useful, flexible way of storing and manipulating data.
 aList <- list(aVector,aMatrix,aDataframe);aList # creating a list of 3 different things
-aList <- list(aVector=aVector,aMatrix=aMatrix,aDataframe=aDataframe);aList #this does the same thing, but I've also given them names 
+aList <- list(aVector = aVector,
+              aMatrix=aMatrix,
+              aDataframe=aDataframe);aList #this does the same thing, but I've also given them names 
 aList$aVector
 # with lists, you can also use [[]] to index a list element
 # So, 
@@ -297,7 +317,7 @@ aList$aMatrix[ ,1]
 (datedf.3 <- datedf[datedf$days == 3, ])
 # Important, don't forget the comma signifying the index placement! 
 # If you try to run this:
-(datedf.3 <- datedf[datedf$days == 3 ]) 
+(datedf.3 <- datedf[datedf$days == 3, ]) 
 
 # it won't work because when there is no "," in [ ] for data frames, R automatically 
 # assumes you are wanting a column, but we are subsetting rows, not columns. 
@@ -326,10 +346,10 @@ head(CO2) # this looks at the head/beginning of CO2
 tail(CO2) # this looks at the tail/end of CO2. These are useful when you want to make sure that everythign looks good
 View(CO2) # This is another way to see the data. It opens up a new tab. 
 summary(CO2) # this looks at a summary of the data. R automatically determines what things to summarize.
-C02b <- CO2 # CO2 exists as a dataset deep inside R, but not in our environment here until you make an assignment.
-write.csv(CO2b, file="CO2.csv") # this writes the CO2 dataset as a comma separated file into the current working directory.
+CO2 <- CO2 # CO2 exists as a dataset deep inside R, but not in our environment here until you make an assignment.
+write.csv(CO2, file="CO2.csv") # this writes the CO2 dataset as a comma separated file into the current working directory.
 # If you wanted to write or read from a directory other than the wd, you need to specify the full path name.
-C02_readin <- read.csv("CO2.csv",header=TRUE) # this grabs the CO2.csv file from your current working directory, brings it into R, and assigns it to CO2_readin
+CO2_readin <- read.csv("CO2.csv",header=TRUE) # this grabs the CO2.csv file from your current working directory, brings it into R, and assigns it to CO2_readin
 ?read.csv
 ?read.table
 
