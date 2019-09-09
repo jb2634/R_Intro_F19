@@ -606,7 +606,7 @@ I'm going to explicitly set the pch or marker type, so that the plot will have t
     
 ```{r}
     
-palette(c("black", "red", "blue"))
+palette(c("black", tr.red, tr.blue))
     
 plot(Petal.Length ~ Sepal.Length, 
          data = iris, 
@@ -625,10 +625,6 @@ plot(Petal.Length ~ Sepal.Length,
 
     
 From the plot, we can see there is a difference in flower size, with setosa have the shortest sepals and petals, and virginica have the longest, though there is more overlap in sepal lengths among species than petal lengths.  The virginica species would have the longest petals and sepals on average.  
-    
-Lets take a look at representations of these species to see if that makes sense:  
-
-![Iris flowers by species](irisflowers.png)  
   
   
 
